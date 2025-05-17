@@ -1,3 +1,5 @@
 UNBLOCKED GAMES !
 
-Play at https://coder3527.github.io/ubg10
+Play at https://coder3527.github.io/
+
+Open an issue to request a game
