@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>RPG game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        body { margin: 0; background: #222; }
+        canvas { display: block; margin: auto; background: #333 }
+        #controls {
+            position: fixed; bottom: 10px; left: 0; right: 0; text-align: center;
+            z-index: 100;
+        }
+        .btn {
+            width: 60px; height: 60px; margin: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.3); color: #fff; font-size: 2em; border: none;
+        }
+        #action-btn {
+            background: #3c9; margin-left: 40px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <div id="controls">
+        <button class="btn" id="left-btn">&#8592;</button>
+        <button class="btn" id="up-btn">&#8593;</button>
+        <button class="btn" id="down-btn">&#8595;</button>
+        <button class="btn" id="right-btn">&#8594;</button>
+        <button class="btn" id="action-btn">A</button>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
