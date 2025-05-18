@@ -16,6 +16,26 @@
             min-height: 100vh;
             text-align: center; /* Default text alignment for smaller screens */
         }
+        .glow {
+            animation: glow-animate 2s infinite alternate;
+        }
+
+        @keyframes glow-animate {
+            from {
+               text-shadow:
+                   0 0 10px #ffffff,
+                   0 0 20px #fff9c0,
+                   0 0 30px #ffffff;
+               color: #fffbe7;
+            }
+            to {
+              text-shadow:
+                   0 0 20px #fff9c0,
+                   0 0 40px #fffacc,
+                   0 0 60px #fffbe7;
+              color: #fffde2;
+             }
+        }
 
         .container {
             background-color: #fff;
@@ -72,7 +92,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Unblocked Games</h1>
+        <h1 class="glow">Unblocked Games</h1>
         <a href="/games/yohoho.html" class="game-link">Play Yohoho.io</a>
         <a href="/games/paperio.html" class="game-link">Play Paper.io</a>
         <a href="/games/tallio.html" class="game-link">Play Tall.io</a>
