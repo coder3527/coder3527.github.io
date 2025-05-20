@@ -133,6 +133,14 @@
                 cost: () => 300 + state.upgrades.rig * 150,
                 buy: () => { state.perSecond += 10; }
             }
+            {
+                key: 'js',
+                name: 'JavaScript Console',
+                desc: '+50 per second',
+                baseCost: 1400,
+                cost: () => 1400 + state.upgrades.js * 280,
+                buy: () => { state.perSecond += 50; }
+            }
         ];
 
         // Utilities
