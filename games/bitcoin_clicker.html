@@ -159,6 +159,22 @@
                 } catch {}
             }
         }
+        function loadState() {
+            const saved = localStorage.getItem('btcClickerState');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = Object.assign(state, parsed);
+                   // Ensure all upgrade keys exist and are numbers
+                   for (const upg of upgrades) {
+                   if (typeof state.upgrades[upg.key] !== 'number') {
+                      state.upgrades[upg.key] = 0;
+                      }
+                }
+            }
+        } catch {}
+    }
+}
 
         function updateDisplay() {
             document.getElementById('bitcoins').textContent = `₿ ${state.bitcoins.toLocaleString()}`;
@@ -166,7 +182,7 @@
             const container = document.getElementById('shop-items');
             container.innerHTML = '';
             upgrades.forEach(upg => {
-                const amount = state.upgrades[upg.key];
+                const amount = state.upgrades[upg.key] ?? 0;
                 const cost = upg.cost();
                 const canBuy = state.bitcoins >= cost;
                 const div = document.createElement('div');
@@ -224,6 +240,9 @@
                         rig: 0
                     }
                 };
+                for (const upg of upgrades) {
+                    state.upgrades[upg.key] = 0;
+                }
                 saveState();
                 updateDisplay();
             }
