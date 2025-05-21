@@ -1,0 +1,113 @@
+body {
+    background: #111;
+    color: #FFD600;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: #222;
+    border-radius: 10px;
+    box-shadow: 0 0 24px #FFD60044;
+    padding: 32px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.2em;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+}
+
+#bitcoin-count {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 24px 0;
+    color: #FFD600;
+    background: #333;
+    border-radius: 8px;
+    padding: 12px;
+    display: inline-block;
+}
+
+#mine-btn {
+    background: #FFD600;
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.4em;
+    padding: 16px 36px;
+    cursor: pointer;
+    margin-bottom: 32px;
+    transition: background 0.2s, color 0.2s;
+}
+
+#mine-btn:hover {
+    background: #fff700;
+    color: #222;
+}
+
+#shop {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.shop-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #181818;
+    border-radius: 8px;
+    padding: 14px 20px;
+    box-shadow: 0 0 8px #FFD60022;
+}
+
+.shop-item .info {
+    text-align: left;
+}
+
+.shop-item .name {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.shop-item .desc {
+    font-size: 0.95em;
+    color: #FFD600bb;
+}
+
+.shop-item .price {
+    font-size: 1.05em;
+    color: #FFD600;
+}
+
+.shop-item button {
+    background: #FFD600;
+    color: #111;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    padding: 7px 20px;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+
+.shop-item button:disabled {
+    background: #444;
+    color: #FFD60077;
+    cursor: default;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 8px;
+    }
+    #shop {
+        gap: 8px;
+    }
+}
