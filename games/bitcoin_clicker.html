@@ -149,16 +149,7 @@
             localStorage.setItem('btcClickerState', JSON.stringify(state));
         }
 
-        function loadState() {
-            const saved = localStorage.getItem('btcClickerState');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    // Restore all fields, fallback to defaults if missing
-                    state = Object.assign(state, parsed);
-                } catch {}
-            }
-        }
+        
         function loadState() {
             const saved = localStorage.getItem('btcClickerState');
             if (saved) {
@@ -167,7 +158,7 @@
                     state = Object.assign(state, parsed);
                    // Ensure all upgrade keys exist and are numbers
                    for (const upg of upgrades) {
-                   if (typeof state.upgrades[upg.key] !== 'number') {
+                       if (typeof state.upgrades[upg.key] !== 'number') {
                       state.upgrades[upg.key] = 0;
                       }
                 }
@@ -235,9 +226,9 @@
                     perClick: 1,
                     perSecond: 0,
                     upgrades: {
-                        pickaxe: 0,
+                       /* pickaxe: 0,
                         miner: 0,
-                        rig: 0
+                        rig: 0 */
                     }
                 };
                 for (const upg of upgrades) {
