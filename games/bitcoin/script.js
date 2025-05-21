@@ -167,7 +167,7 @@ function resetGame() {
     location.reload();
   }
 }
-setInterval(autoMine, 100);
+//setInterval(autoMine, 100);
 // --- Event Listeners ---
 clickBtn.addEventListener("click", mineBitcoin);
 saveBtn.addEventListener("click", () => {
