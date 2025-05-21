@@ -104,10 +104,40 @@ function autoMine() {
   game.btc += getBtcPerSec() / 10; // 100ms interval
   updateDisplay();
 }
+// ...existing code...
 
 function saveGame() {
   localStorage.setItem("btcClickerSave", JSON.stringify(game));
 }
+
+// --- AUTOSAVE: Save every 5 seconds ---
+setInterval(saveGame, 5000);
+
+// Optional: Save after key actions
+function mineBitcoin() {
+  game.btc += getBtcPerClick();
+  updateDisplay();
+  saveGame(); // Save after clicking
+}
+
+function buyUpgrade(idx) {
+  const upg = game.upgrades[idx];
+  if (game.btc >= upg.cost) {
+    game.btc -= upg.cost;
+    upg.owned++;
+    // scale cost
+    upg.cost *= upg.costScale;
+    updateDisplay();
+    saveGame(); // Save after buying upgrade
+  }
+}
+
+// ...existing code...
+
+// The rest of your code remains unchanged, including window.onload = function() { loadGame(); }
+//function saveGame() {
+ // localStorage.setItem("btcClickerSave", JSON.stringify(game));
+//}
 
 function loadGame() {
   const data = localStorage.getItem("btcClickerSave");
