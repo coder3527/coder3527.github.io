@@ -111,7 +111,7 @@ function saveGame() {
 }
 
 // --- AUTOSAVE: Save every 5 seconds ---
-setInterval(saveGame, 5000);
+setInterval(saveGame, 500);
 
 // Optional: Save after key actions
 function mineBitcoin() {
