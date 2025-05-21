@@ -1,18 +1,26 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Bitcoin Clicker</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Bitcoin Clicker Game</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Bitcoin Clicker</h1>
-        <div id="bitcoin-count">0 ₿</div>
-        <button id="mine-btn">Miner !</button>
-        <h2>Boutique</h2>
-        <div id="shop"></div>
+  <div id="main">
+    <h1>🟡 Bitcoin Clicker 🟡</h1>
+    <div id="btc-display">
+      <span id="btc-amount">0</span> <span>BTC</span>
     </div>
-    <script src="script.js"></script>
+    <button id="click-btn">Mine Bitcoin</button>
+    <div id="per-sec">
+      <span>Per Second: </span><span id="btc-per-sec">0</span>
+    </div>
+    <h2>🟡 Upgrades Shop 🟡</h2>
+    <div id="shop"></div>
+    <button id="save-btn">Save Game</button>
+    <button id="load-btn">Load Game</button>
+    <button id="reset-btn">Reset Game</button>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
