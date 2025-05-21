@@ -115,8 +115,8 @@ function saveGame() {
   localStorage.setItem("btcClickerSave", JSON.stringify(game));
 }
 
-// --- AUTOSAVE: Save every 5 seconds ---
-setInterval(saveGame, 500);
+// --- AUTOSAVE: Save every 0.05 seconds ---
+setInterval(saveGame, 50);
 
 // Optional: Save after key actions
 function mineBitcoin() {
