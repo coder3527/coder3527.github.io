@@ -100,8 +100,13 @@ function getBtcPerClick() {
   updateDisplay();
 }*/
 
-function autoMine() {
+/*function autoMine() {
   game.btc += getBtcPerSec() / 10; // 100ms interval
+  updateDisplay();
+}*/
+function autoMine() {
+  console.log("autoMine tick", getBtcPerSec());
+  game.btc += getBtcPerSec() / 10;
   updateDisplay();
 }
 // ...existing code...
