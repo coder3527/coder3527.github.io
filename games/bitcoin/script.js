@@ -84,7 +84,7 @@ function getBtcPerClick() {
   return pcs * multiplier;
 }
 
-function buyUpgrade(idx) {
+/*function buyUpgrade(idx) {
   const upg = game.upgrades[idx];
   if (game.btc >= upg.cost) {
     game.btc -= upg.cost;
@@ -93,12 +93,12 @@ function buyUpgrade(idx) {
     upg.cost *= upg.costScale;
     updateDisplay();
   }
-}
+} */
 
-function mineBitcoin() {
+/*function mineBitcoin() {
   game.btc += getBtcPerClick();
   updateDisplay();
-}
+}*/
 
 function autoMine() {
   game.btc += getBtcPerSec() / 10; // 100ms interval
