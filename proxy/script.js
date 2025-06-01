@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
         "https://helios-browser.w3spaces.com/",
         "https://helios-browser.pages.dev/",
         "https://helios-browser.ct.ws"
+        "https://coder3527.github.io/proxy/index.html"
     ];
 
     function normalizeUrl(url) {
