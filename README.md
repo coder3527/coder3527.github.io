@@ -1,8 +1,10 @@
-### 🎮 UNBLOCKED GAMES ! 🥷
+# 🎮 UNBLOCKED GAMES ! 🥷
 
-Play at https://coder3527.github.io/
+#### Play at https://coder3527.github.io/
 
-Open an issue to request a game
+#### Open an issue to request a game
 
-Leave a star if you enjoy !
+#### Leave a star if you enjoy !
+
+###### Oh and i added helios proxy
 
