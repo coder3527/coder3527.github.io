@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Racing Game with Physics & Lap Timer</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <style>
+    body { margin: 0; overflow: hidden; background: #222; }
+    #controls {
+      position: fixed; bottom: 20px; left: 0; right: 0; z-index: 10;
+      display: flex; justify-content: center; gap: 30px; pointer-events: none;
+    }
+    .btn {
+      pointer-events: all;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: #fff3; border: 2px solid #fff9;
+      color: #fff; font-size: 2em; text-align: center; line-height: 60px;
+      user-select: none; touch-action: manipulation;
+    }
+    #lapLabel {
+      position: fixed; top: 10px; left: 12px; z-index: 20;
+      background: #000a; color: #fff; padding: 7px 18px; border-radius: 8px;
+      font-family: sans-serif; font-size: 1.1em;
+    }
+    #timerLabel {
+      position: fixed; top: 10px; right: 12px; z-index: 20;
+      background: #000a; color: #fff; padding: 7px 18px; border-radius: 8px;
+      font-family: sans-serif; font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <div id="lapLabel">Lap: 1</div>
+  <div id="timerLabel">Time: 0.00s</div>
+  <div id="controls">
+    <div class="btn" id="left">&#8592;</div>
+    <div class="btn" id="up">&#8593;</div>
+    <div class="btn" id="down">&#8595;</div>
+    <div class="btn" id="right">&#8594;</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"></script>
+  <script>
+    // --- Setup Three.js Scene ---
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x222244);
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias:true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // --- Lighting ---
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+    sun.position.set(10, 20, 10);
+    scene.add(sun);
+
+    // --- Setup Cannon-es Physics World ---
+    const world = new CANNON.World({
+      gravity: new CANNON.Vec3(0, -9.82, 0)
+    });
+    world.broadphase = new CANNON.NaiveBroadphase();
+    world.solver.iterations = 10;
+
+    // --- Track/Level Data ---
+    // (Lap line is a thin invisible trigger at the track start)
+    const trackLength = 80;
+    const trackWidth = 18;
+    const carStart = { x: 0, z: trackLength/2 - 5, dir: 0 };
+    let lap = 1, lapStartTime = 0, bestLap = null;
+
+    // --- Track (visual) ---
+    const groundMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(trackWidth, trackLength),
+      new THREE.MeshPhongMaterial({color: 0x444444})
+    );
+    groundMesh.rotation.x = -Math.PI/2;
+    scene.add(groundMesh);
+
+    // --- Track (physics) ---
+    const groundBody = new CANNON.Body({
+      mass: 0, shape: new CANNON.Plane(),
+      material: new CANNON.Material({friction: 0.6, restitution: 0.3})
+    });
+    groundBody.quaternion.setFromEuler(-Math.PI/2, 0, 0);
+    world.addBody(groundBody);
+
+    // --- Lap Trigger (physics, invisible) ---
+    const lapLineZ = trackLength/2 - 2;
+    const lapTrigger = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC });
+    lapTrigger.addShape(new CANNON.Box(new CANNON.Vec3(trackWidth/2, 0.2, 0.2)));
+    lapTrigger.collisionResponse = false;
+    lapTrigger.position.set(0, 0.1, lapLineZ);
+    world.addBody(lapTrigger);
+
+    // --- Walls (visual + physics) ---
+    function addWall(x, z, rot = 0) {
+      const length = trackLength;
+      const wallMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, length),
+        new THREE.MeshPhongMaterial({color: 0x222})
+      );
+      wallMesh.position.set(x, 0.5, z);
+      wallMesh.rotation.y = rot;
+      scene.add(wallMesh);
+
+      const wallBody = new CANNON.Body({
+        mass: 0,
+        shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, length/2)),
+        position: new CANNON.Vec3(x, 0.5, z)
+      });
+      wallBody.quaternion.setFromEuler(0, rot, 0);
+      world.addBody(wallBody);
+    }
+    addWall(-trackWidth/2 + 0.5, 0, 0); // left
+    addWall(trackWidth/2 - 0.5, 0, 0);  // right
+
+    // --- Car (visual + physics) ---
+    function createCar() {
+      // Visual group
+      const group = new THREE.Group();
+      // Main body (blue)
+      const bodyMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2, 0.3, 2),
+        new THREE.MeshPhongMaterial({color: 0x1976D2})
+      );
+      bodyMesh.position.set(0, 0.32, 0);
+      group.add(bodyMesh);
+      // Cabin (white)
+      const cabin = new THREE.Mesh(
+        new THREE.BoxGeometry(0.8, 0.25, 0.7),
+        new THREE.MeshPhongMaterial({color: 0xeeeeee})
+      );
+      cabin.position.set(0, 0.48, -0.25);
+      group.add(cabin);
+      // Wheels (black)
+      const wheelGeo = new THREE.CylinderGeometry(0.19, 0.19, 0.22, 20);
+      const wheelMat = new THREE.MeshPhongMaterial({color: 0x111111});
+      for(let dx of [-0.5,0.5]) for(let dz of [-0.8,0.8]) {
+        const wheel = new THREE.Mesh(wheelGeo, wheelMat);
+        wheel.rotation.z = Math.PI/2;
+        wheel.position.set(dx, 0.16, dz);
+        group.add(wheel);
+      }
+      // Spoiler (red)
+      const spoiler = new THREE.Mesh(
+        new THREE.BoxGeometry(0.7, 0.1, 0.15),
+        new THREE.MeshPhongMaterial({color: 0xff0000})
+      );
+      spoiler.position.set(0, 0.48, 0.93);
+      group.add(spoiler);
+
+      // Physics body
+      const shape = new CANNON.Box(new CANNON.Vec3(0.6, 0.15, 1));
+      const body = new CANNON.Body({ mass: 1.1 });
+      body.addShape(shape);
+      body.position.set(carStart.x, 0.3, carStart.z);
+      body.linearDamping = 0.28; // Simulate friction
+      body.angularDamping = 0.5;
+
+      // State
+      return { group, body };
+    }
+
+    let { group: carGroup, body: carBody } = createCar();
+    scene.add(carGroup);
+    world.addBody(carBody);
+
+    // --- Controls & Physics ---
+    const controls = { left: false, right: false, up: false, down: false };
+    const engineForce = 7.5;
+    const brakeForce = 4.5;
+    const steerForce = 1.65;
+    // Touch controls
+    function setControl(name, val) { controls[name] = val; }
+    for (const dir of ['left','right','up','down']) {
+      document.getElementById(dir).ontouchstart = () => setControl(dir, true);
+      document.getElementById(dir).ontouchend = () => setControl(dir, false);
+    }
+    // Keyboard
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') controls.left = true;
+      if (e.key === 'ArrowRight') controls.right = true;
+      if (e.key === 'ArrowUp') controls.up = true;
+      if (e.key === 'ArrowDown') controls.down = true;
+    });
+    window.addEventListener('keyup', e => {
+      if (e.key === 'ArrowLeft') controls.left = false;
+      if (e.key === 'ArrowRight') controls.right = false;
+      if (e.key === 'ArrowUp') controls.up = false;
+      if (e.key === 'ArrowDown') controls.down = false;
+    });
+
+    // Lap/Timer UI
+    function updateLapUI() {
+      document.getElementById('lapLabel').textContent = `Lap: ${lap}` + (bestLap ? ` (Best: ${bestLap.toFixed(2)}s)` : '');
+    }
+    function updateTimerUI(time) {
+      document.getElementById('timerLabel').textContent = `Time: ${time.toFixed(2)}s`;
+    }
+
+    // --- Lap Detection ---
+    let inLapZone = false;
+    function checkLapTrigger() {
+      // If car crosses the lap trigger from below, count as new lap
+      if (Math.abs(carBody.position.x) < trackWidth/2 &&
+          Math.abs(carBody.position.z - lapLineZ) < 0.7) {
+        if (!inLapZone && carBody.velocity.z > 0) {
+          const now = performance.now();
+          if (lapStartTime > 0) {
+            const lapTime = (now - lapStartTime) / 1000;
+            if (!bestLap || lapTime < bestLap) bestLap = lapTime;
+            updateLapUI();
+          }
+          lap += 1;
+          lapStartTime = now;
+        }
+        inLapZone = true;
+      } else {
+        inLapZone = false;
+      }
+    }
+
+    // --- Animation Loop ---
+    let prevTime = performance.now();
+    lapStartTime = prevTime;
+    function animate() {
+      requestAnimationFrame(animate);
+      // Physics step
+      const now = performance.now();
+      const dt = Math.min((now - prevTime) / 1000, 0.045);
+      prevTime = now;
+
+      // Apply controls as physics forces
+      let forward = 0, turn = 0;
+      if (controls.up) forward += engineForce;
+      if (controls.down) forward -= brakeForce;
+      if (controls.left) turn += steerForce;
+      if (controls.right) turn -= steerForce;
+
+      // Get car forward direction
+      const q = carBody.quaternion;
+      const forwardVec = new CANNON.Vec3(0,0,1);
+      q.vmult(forwardVec, forwardVec);
+
+      // Apply forward/reverse
+      if (Math.abs(forward) > 0.1) {
+        carBody.applyForce(forwardVec.scale(-forward), carBody.position);
+      }
+      // Apply steering (rotate car)
+      if (Math.abs(turn) > 0.1) {
+        carBody.angularVelocity.y += turn * dt;
+      }
+
+      // Simple "drift": reduce side slip
+      const velocity = carBody.velocity;
+      const angle = Math.atan2(velocity.x, velocity.z) - carBody.quaternion.toEuler().y;
+      velocity.x -= Math.sin(angle) * 0.2;
+      velocity.z -= Math.sin(angle) * 0.2;
+
+      world.step(1/60, dt);
+
+      // Sync car mesh to physics body
+      carGroup.position.copy(carBody.position);
+      carGroup.quaternion.copy(carBody.quaternion);
+
+      // Camera follow
+      const camDist = 6, camHeight = 3;
+      const dir = new THREE.Vector3(0,0,1).applyQuaternion(carGroup.quaternion);
+      camera.position.x = carGroup.position.x - dir.x * camDist;
+      camera.position.z = carGroup.position.z - dir.z * camDist;
+      camera.position.y = carGroup.position.y + camHeight;
+      camera.lookAt(carGroup.position);
+
+      // Lap detection & timing
+      checkLapTrigger();
+      if (lapStartTime) updateTimerUI((performance.now() - lapStartTime)/1000);
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    window.addEventListener('resize', ()=>{
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    updateLapUI();
+  </script>
+</body>
+</html>
