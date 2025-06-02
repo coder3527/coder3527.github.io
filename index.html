@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="https://cloud.umami.is/script.js" data-website-id="83c0fe9b-806d-4f42-b367-d28f47c1fd5e"></script>
+    <script src="https://cdn.cloudflare.com/usr/script_r7o9piu643T32Iio9.js"></script>
     <title>Online Games</title>
     
     <style>
@@ -71,7 +72,19 @@
             transition: background-color 0.3s ease; /* Smooth transition for hover effect */
             width: fit-content; /* Make the button fit its content */
         }
-        .proxy-link {
+        .gh-link {
+            display: block;
+            margin: 10px auto; /* Center the links */
+            padding: 12px 24px;
+            background-color: black;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+            width: fit-content; /* Make the button fit its content */
+        }
+        .cloak-link {
+            font-size: 1.2rem;
             display: block;
             margin: 10px auto; /* Center the links */
             padding: 12px 24px;
@@ -122,7 +135,7 @@
 <body>
     <div class="container">
         <h1 class="fly">Online Games</h1>
-        
+        <button class="cloak-link" onclick="openCloak()">Tab cloak</button>
         <a href="/games/yohoho.html" class="game-link">Play Yohoho.io</a>
         <a href="/games/paperio.html" class="game-link">Play Paper.io</a>
         <a href="/games/tallio.html" class="game-link">Play Tall.io</a>
@@ -132,10 +145,9 @@
         <a href="/games/bitcoin/index.html" class="game-link">[BETA] Bitcoin Clicker</a>
         <a href="/games/3scape.html" class="game-link">Play Escape</a>
         <a href="/games/subwaysurf.html" class="game-link">Play Subway Surfers</a>
-        <a href="/games/race-physics.html" class="game-link">Play Race</a>
-        <button class="proxy-link" onclick="openGame()">Tab cloak</button>
+        <a href="https://github.io/coder3527/coder3727.github.io" class="gh-link">GitHub</a>
         <script>
-           function openGame() {
+           function openCloak() {
               var win = window.open()
               var url = "https://coder3527.github.io"
               var iframe = win.document.createElement('iframe')
