@@ -1,9 +1,9 @@
 CREDITS :
 
 yohoho.io : https://yohoho-io.space/
-tall.io, archers.io, paper.io, snake.io : https://ubg17.github.io
+tall.io, archers.io, paper.io, hole.io, snake.io : https://ubg17.github.io
 Bitcoin clicker : 100% by me
-Escape : _Elektron_ on Scratch
 Subway Surfers : https://subwaysurfersmonaco.glitch.me/
-Helios proxy : dinguschan
+Stack Game : https://ug17.github.io/
+Minecraft : https://mcraft.fun/
 Homepage : 100% by me
